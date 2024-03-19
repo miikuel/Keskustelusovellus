@@ -4,11 +4,12 @@
 <a href="/logout">Kirjaudu ulos</a>
 <hr>
 {% if session.admin %}
-<a href="/new-section">Luo uusi keskustelualue</a>
+<a href="/new-topic">Luo uusi keskustelualue</a>
 {% endif %}
+<h2>Keskustelualueet</h2>
 <ul>
-{% for section in sections %}
-<li>{{ section.name }}</li>
+<a href="/topic">{% for topic in topics %}</a>
+<li>{{ topic.name }}</li>
 {% endfor %}
 </ul>
 {% else %}

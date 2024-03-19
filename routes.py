@@ -7,8 +7,8 @@ import topics
 @app.route("/")
 def index():
     if users.is_logged():
-        sectionlist = topics.get_sections()
-        return render_template("index.html", sections=sectionlist)
+        topiclist = topics.get_topics()
+        return render_template("index.html", topics=topiclist)
     else:
         return render_template("index.html")
 
@@ -41,15 +41,15 @@ def logout():
     users.logout()
     return redirect("/")
 
-@app.route("/new-section", methods=["GET", "POST"])
-def new_section():
+@app.route("/new-topic", methods=["GET", "POST"])
+def new_topic():
     if not users.is_admin():
         return redirect("/")
     if request.method == "GET":
-        return render_template("new-section.html")
+        return render_template("new-topic.html")
     if request.method == "POST":
-        section_name = request.form["section-name"]
-        if topics.new_section(section_name):
+        topic_name = request.form["topic-name"]
+        if topics.new_topic(topic_name):
             return redirect("/")
         else:
             return render_template("error.html", message="Uuden aihealueen luominen ei onnistunut")
