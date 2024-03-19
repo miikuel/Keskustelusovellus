@@ -1,7 +1,16 @@
 {% if session.username %}
 <h1>Keskustelusovellus</h1>
-<p>Olet kirjautunut nimellä {{ session.username }}</p>
+<p>Olet kirjautunut nimellä <b>{{ session.username }}</b></p>
 <a href="/logout">Kirjaudu ulos</a>
+<hr>
+{% if session.admin %}
+<a href="/new-section">Luo uusi keskustelualue</a>
+{% endif %}
+<ul>
+{% for section in sections %}
+<li>{{ section.name }}</li>
+{% endfor %}
+</ul>
 {% else %}
 <h1>Keskustelusovellus</h1>
 <h2>Kirjaudu sisään</h2>
