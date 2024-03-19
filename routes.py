@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, url_for
 import users
 import topics
 
@@ -53,3 +53,10 @@ def new_topic():
             return redirect("/")
         else:
             return render_template("error.html", message="Uuden aihealueen luominen ei onnistunut")
+        
+@app.route("/topic/<name>")
+def topic(name):
+    if users.is_logged():
+        return render_template("topic.html", topicname=name)
+    else:
+        return redirect("/")

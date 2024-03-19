@@ -8,8 +8,8 @@
 {% endif %}
 <h2>Keskustelualueet</h2>
 <ul>
-<a href="/topic">{% for topic in topics %}</a>
-<li>{{ topic.name }}</li>
+{% for topic in topics %}
+<li><a href="{{ url_for('topic', name=topic.name.lower()) }}">{{ topic.name }}</a></li>
 {% endfor %}
 </ul>
 {% else %}
