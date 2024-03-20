@@ -1,3 +1,11 @@
 <h1>Keskustelusovellus</h1>
 <h2>{{ topicname.capitalize() }}</h2>
+<a href="{{url_for('new_thread', topicname=topicname)}}">Luo uusi ketju</a>
+<br>
 <a href="/">Palaa etusivulle</a>
+<hr>
+<ul>
+{% for thread in topicthreads %}
+<li><a href="{{url_for('thread', name=topicname, thread=thread.name.lower())}}">{{ thread.name }}</a></li>
+{% endfor %}
+</ul>

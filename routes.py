@@ -54,9 +54,30 @@ def new_topic():
         else:
             return render_template("error.html", message="Uuden aihealueen luominen ei onnistunut")
         
+@app.route("/new-thread/<topicname>", methods=["GET", "POST"])
+def new_thread(topicname):
+    if users.is_logged():
+        if request.method == "GET":
+            return render_template("new-thread.html", topicname=topicname)
+        if request.method == "POST":
+            threadname = request.form["thread-name"]
+            content = request.form["content"]
+            topics.new_thread(topicname, threadname, content=content)
+            return redirect(url_for("topic", name=topicname))
+    else:
+        return render_template("error.html", message="Uuden viestiketjun luominen epäonnistui")
+
 @app.route("/topic/<name>")
 def topic(name):
     if users.is_logged():
-        return render_template("topic.html", topicname=name)
+        threads = topics.topic_threads(name)
+        return render_template("topic.html", topicname=name, topicthreads=threads)
+    else:
+        return redirect("/")
+    
+@app.route("/topic/<name>/<thread>")
+def thread(name, thread):
+    if users.is_logged():
+        return render_template("thread.html")
     else:
         return redirect("/")
