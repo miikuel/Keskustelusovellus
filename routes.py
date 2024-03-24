@@ -66,6 +66,18 @@ def new_thread(topicname):
             return redirect(url_for("topic", name=topicname))
     else:
         return render_template("error.html", message="Uuden viestiketjun luominen epäonnistui")
+    
+@app.route("/<topicname>/<threadname>/new-message", methods=["POST"])
+def new_message(topicname, threadname):
+    if not users.is_logged():
+        return redirect("/")
+    message = request.form["content"]
+    if topics.new_message(threadname, message):
+        return redirect(url_for("thread", name=topicname, thread=threadname))
+    else:
+        return render_template("error.html", message="Viestin lähetys epäonnistui")
+
+
 
 @app.route("/topic/<name>")
 def topic(name):
@@ -78,6 +90,8 @@ def topic(name):
 @app.route("/topic/<name>/<thread>")
 def thread(name, thread):
     if users.is_logged():
-        return render_template("thread.html")
+        messages = topics.get_messages(thread)
+        return render_template("thread.html", topicname=name, threadname=thread, messages=messages)
     else:
         return redirect("/")
+    

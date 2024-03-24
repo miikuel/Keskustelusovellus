@@ -1,1 +1,18 @@
-Testing testing
+<h1>Keskustelusovellus</h1>
+<h2>{{ topicname.capitalize() }}</h2>
+<h3>{{ threadname.capitalize() }}</h3>
+<a href="/">Palaa etusivulle</a>
+<hr>
+{% for message in messages %}
+<p><b>#{{ message.rownumber }}</b></p>
+<p><b>{{ message.created_at }}</b></p>
+<p><b>{{ message.username }} kirjoitti:</b></p>
+<p>{{ message.message }}</p>
+<hr>
+{% endfor %}
+<form action="{{url_for('new_message', topicname=topicname, threadname=threadname)}}" method="POST">
+    <p>Kirjoita uusi viesti:<br>
+    <textarea name="content" rows="3" cols="40"></textarea>
+    <br><br>
+    <input type="submit" value="Lähetä viesti">
+    </form>
