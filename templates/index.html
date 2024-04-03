@@ -12,6 +12,13 @@
 <li><a href="{{ url_for('topic', name=topic.name.lower()) }}">{{ topic.name }}</a></li>
 {% endfor %}
 </ul>
+<form action="/result" method="GET">
+Hakusana:
+<br>
+<input type="text" name="query">
+<br>
+<input type="submit" value="Hae viestejä">
+</form>
 {% else %}
 <h1>Keskustelusovellus</h1>
 <h2>Kirjaudu sisään</h2>

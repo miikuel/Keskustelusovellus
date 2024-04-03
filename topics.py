@@ -76,3 +76,10 @@ def new_message(thread, message):
         return True
     except:
         return False
+    
+
+def search_messages(query):
+    sql = "SELECT m.message, m.created_at, m.edited, m.created_by, users.username, topics.name topicname, threads.name threadname FROM messages m, topics, threads, users WHERE topics.id=m.topic_id AND threads.id=m.thread_id AND users.id=m.created_by AND LOWER(m.message) LIKE :query"
+    result = db.session.execute(text(sql), {"query":"%"+query.lower()+"%"})
+    messages = result.fetchall()
+    return messages

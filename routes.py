@@ -95,3 +95,13 @@ def thread(name, thread):
     else:
         return redirect("/")
     
+@app.route("/result")
+def result():
+    if users.is_logged():
+        query = request.args["query"]
+        messages = topics.search_messages(query)
+        return render_template("result.html", messages=messages)
+    else:
+        return redirect("/")
+
+    
