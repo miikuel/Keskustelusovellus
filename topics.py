@@ -11,7 +11,7 @@ def new_topic(topic_name):
         return False
     try:
         sql = "INSERT INTO topics (name, created_by, created_at) VALUES (:name, :created_by, :date)"
-        db.session.execute(text(sql), {"name":topic_name.capitalize(), "created_by":user.id, "date":datetime.now().replace(second=0, microsecond=0)})
+        db.session.execute(text(sql), {"name":topic_name.capitalize(), "created_by":user.id, "date":datetime.now().replace(microsecond=0)})
         db.session.commit()
         return True
     except:
@@ -50,10 +50,10 @@ def new_thread(topicname, threadname, content):
         result = db.session.execute(text(sql), {"username":session["username"]})
         user_id = result.fetchone()[0]
         sql = "INSERT INTO threads (name, topic_id, created_by, created_at) VALUES (:threadname, :topic_id, :user_id, :created_at) RETURNING id"
-        result = db.session.execute(text(sql), {"threadname":threadname.capitalize(), "topic_id":topic_id, "user_id":user_id, "created_at":datetime.now().replace(second=0, microsecond=0)})
+        result = db.session.execute(text(sql), {"threadname":threadname.capitalize(), "topic_id":topic_id, "user_id":user_id, "created_at":datetime.now().replace(microsecond=0)})
         thread_id = result.fetchone()[0]
         sql = "INSERT INTO messages (message, created_by, thread_id, topic_id, created_at) VALUES (:message, :user_id, :thread_id, :topic_id, :created_at)"
-        db.session.execute(text(sql), {"message":content, "user_id":user_id, "thread_id":thread_id, "topic_id":topic_id, "created_at":datetime.now().replace(second=0, microsecond=0)})
+        db.session.execute(text(sql), {"message":content, "user_id":user_id, "thread_id":thread_id, "topic_id":topic_id, "created_at":datetime.now().replace(microsecond=0)})
         db.session.commit()
         return True
     except:
@@ -71,7 +71,7 @@ def new_message(thread, message):
         result = db.session.execute(text(sql), {"username":session["username"]})
         user_id = result.fetchone()[0]
         sql = "INSERT INTO messages (message, created_by, thread_id, topic_id, created_at) VALUES (:message, :user_id, :thread_id, :topic_id, :created_at)"
-        db.session.execute(text(sql), {"message":message, "user_id":user_id, "thread_id":thread_id, "topic_id":topic_id, "created_at":datetime.now().replace(second=0, microsecond=0)})
+        db.session.execute(text(sql), {"message":message, "user_id":user_id, "thread_id":thread_id, "topic_id":topic_id, "created_at":datetime.now().replace(microsecond=0)})
         db.session.commit()
         return True
     except:
