@@ -27,7 +27,7 @@ def topic_threads(topic):
     sql = "SELECT id FROM topics WHERE LOWER(name)=:topic"
     result = db.session.execute(text(sql), {"topic":topic})
     topic_id = result.fetchone()[0]
-    sql = "SELECT name FROM threads WHERE topic_id=:topic_id"
+    sql = "SELECT t.name, COUNT(m.*) messages, MAX(m.created_at) latest FROM threads t, messages m WHERE t.id=m.thread_id AND t.topic_id=:topic_id GROUP BY t.name"
     result = db.session.execute(text(sql), {"topic_id":topic_id})
     threads = result.fetchall()
     return threads

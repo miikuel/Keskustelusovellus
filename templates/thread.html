@@ -5,7 +5,7 @@
 <hr>
 {% for message in messages %}
 <p><b>#{{ message.rownumber }}</b></p>
-<p><b>{{ message.created_at }}</b></p>
+<p><b>{{ message.created_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
 <p><b>{{ message.username }} kirjoitti:</b></p>
 <p>{{ message.message }}</p>
 <hr>
