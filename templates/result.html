@@ -4,7 +4,7 @@
 <hr>
 {% for message in messages %}
 <p><a href="{{ url_for('topic', name=message.topicname.lower()) }}">{{ message.topicname }}</a></p>
-<p><a href="{{ url_for('topic', name=message.topicname.lower()) }}">{{ message.threadname }}</a></p>
+<p><a href="{{ url_for('thread', name=message.topicname.lower(),thread=message.threadname.lower()) }}">{{ message.threadname }}</a></p>
 <p><b>{{ message.created_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
 <p><b>{{ message.username }} kirjoitti:</b></p>
 <p>{{ message.message }}</p>
