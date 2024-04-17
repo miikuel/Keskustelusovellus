@@ -1,4 +1,5 @@
-<h1>Keskustelusovellus</h1>
+{% extends "layout.html" %}
+{% block content %}
 <h2>Luo uusi ketju</h2>
 <form action="{{url_for('new_thread', topicname=topicname)}}" method="POST">
 <p>Alue: {{ topicname }}</p>
@@ -10,3 +11,4 @@
 <input type="submit" value="Luo uusi keskustelu">
 </form>
 <a href="/">Palaa etusivulle</a>
+{% endblock %}

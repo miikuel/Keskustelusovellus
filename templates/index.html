@@ -1,5 +1,6 @@
+{% extends "layout.html" %}
+{% block content %}
 {% if session.username %}
-<h1>Keskustelusovellus</h1>
 <p>Olet kirjautunut nimellä <b>{{ session.username }}</b></p>
 <a href="/logout">Kirjaudu ulos</a>
 <hr>
@@ -20,14 +21,14 @@ Hakusana:
 <input type="submit" value="Hae viestejä">
 </form>
 {% else %}
-<h1>Keskustelusovellus</h1>
 <h2>Kirjaudu sisään</h2>
 <form action="/login" method="POST">
-<p>Tunnus:<br>
+<p>Käyttäjätunnus:<br>
 <input type="text" name="username"></p>
 <p>Salasana:<br>
 <input type="password" name="password"></p>
 <input type="submit" value="Kirjaudu">
 </form>
-<a href="/register">Rekisteröidy</a>
+<p>Uusi käyttäjä? <a href="/register">Rekisteröidy</a></p>
 {% endif %}
+{% endblock %}

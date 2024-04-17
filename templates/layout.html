@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>
+            {% block title %}Keskustelusovellus{% endblock %}
+        </title>
+    </head>
+    <body>
+        <div class="app-title">Keskustelusovellus</div>
+        {% block content %}{% endblock %}
+    </body>
+</html>

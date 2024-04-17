@@ -1,0 +1,13 @@
+body {
+    font-family: Arial;
+    margin: 0px;
+    
+}
+
+.app-title {
+    padding: 15px 0px;
+    font-size: 25px;
+    font-weight: 600;
+    background-color: rgb(2, 2, 73);
+    color: white;
+}
