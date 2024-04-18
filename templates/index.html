@@ -10,7 +10,7 @@
 <h2>Keskustelualueet</h2>
 <ul>
 {% for topic in topics %}
-<li><a href="{{ url_for('topic', name=topic.name.lower()) }}">{{ topic.name }}</a></li>
+<li><a class="topicname-link" href="{{ url_for('topic', name=topic.name.lower()) }}">{{ topic.name }}</a></li>
 {% endfor %}
 </ul>
 {% else %}

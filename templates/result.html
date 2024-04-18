@@ -1,14 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2>Hakutulokset:</h2>
-<a href="/">Palaa etusivulle</a>
 <hr>
 {% for message in messages %}
-<p><a href="{{ url_for('topic', name=message.topicname.lower()) }}">{{ message.topicname }}</a></p>
-<p><a href="{{ url_for('thread', name=message.topicname.lower(),thread=message.threadname.lower()) }}">{{ message.threadname }}</a></p>
-<p><b>{{ message.created_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
-<p><b>{{ message.username }} kirjoitti:</b></p>
-<p>{{ message.message }}</p>
+<a class="topicname-link" href="{{ url_for('topic', name=message.topicname.lower()) }}">{{ message.topicname }}</a>
+<br><br>
+<div class="search-result-box">
+<a class="topicname-link search-result-threadname" href="{{ url_for('thread', name=message.topicname.lower(),thread=message.threadname.lower()) }}">{{ message.threadname }}</a>
+<p class="search-result-summary">{{ message.created_at.strftime('%d.%m.%Y - %H:%M') }}</p>
+<p class="search-result-summary">Käyttäjä {{ message.username }} kirjoitti:</p>
+<p class="search-result-message">{{ message.message }}</p>
+</div>
 <hr>
 {% endfor %}
+<a href="/">Palaa etusivulle</a>
 {% endblock %}

@@ -7,7 +7,7 @@
 <hr>
 <ul>
 {% for thread in topicthreads %}
-<li><a href="{{url_for('thread', name=topicname, thread=thread.name.lower())}}">{{ thread.name }}</a></li>
+<li><a class="topicname-link" href="{{url_for('thread', name=topicname, thread=thread.name.lower())}}">{{ thread.name }}</a></li>
 <p>Viestejä: {{ thread.messages }}</p>
 <p>Viimeisin viesti {{ thread.latest.strftime('%d.%m.%Y - %H:%M') }}</p>
 <hr>
