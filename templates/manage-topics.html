@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>Luo uusi keskustelualue</h3>
+<form action="/new-topic" method="POST">
+<label for="topic-name">Alueen nimi:</label><br>
+<input type="text" name="topic-name" required>
+<input type="submit" value="Luo aihealue">
+</form>
+<h3>Poista keskustelualue</h3>
+<p><i>HUOM! Toiminto poistaa lopullisesti aihealueen, sekä sen alla olevat ketjut ja niissä olevat viestit.</i></p>
+<form action="/delete-topic" method="POST">
+<label for="item-to-remove">Valitse poistettava aihealue:</label><br>
+<select name="topic-name">
+    {% for topicname in topicnames %}
+        <option value="{{ topicname[0] }}">{{ topicname[0] }}</option>
+    {% endfor %}
+</select>
+<input type="submit" value="Poista">
+</form>
+{% endblock %}

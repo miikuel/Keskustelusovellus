@@ -41,18 +41,32 @@ def logout():
     users.logout()
     return redirect("/")
 
-@app.route("/new-topic", methods=["GET", "POST"])
+@app.route("/manage-topics", methods=["GET"])
+def manage_topics():
+    if not users.is_admin():
+        return redirect("/")
+    topicnames = topics.get_topics()
+    return render_template("manage-topics.html", topicnames=topicnames)
+
+@app.route("/new-topic", methods=["POST"])
 def new_topic():
     if not users.is_admin():
         return redirect("/")
-    if request.method == "GET":
-        return render_template("new-topic.html")
-    if request.method == "POST":
-        topic_name = request.form["topic-name"]
-        if topics.new_topic(topic_name):
-            return redirect("/")
-        else:
-            return render_template("error.html", message="Uuden aihealueen luominen ei onnistunut")
+    topic_name = request.form["topic-name"]
+    if topics.new_topic(topic_name):
+        return redirect("/")
+    else:
+        return render_template("error.html", message="Uuden aihealueen luominen ei onnistunut")
+    
+@app.route("/delete-topic", methods=["POST"])
+def delete_topic():
+    if not users.is_admin():
+        return redirect("/")
+    topicname = request.form["topic-name"]
+    if topics.delete_topic(topicname):
+        return redirect("/manage-topics")
+    else:
+        return render_template("error.html", message="Poistaminen epäonnistui")
         
 @app.route("/new-thread/<topicname>", methods=["GET", "POST"])
 def new_thread(topicname):
@@ -64,8 +78,8 @@ def new_thread(topicname):
             content = request.form["content"]
             topics.new_thread(topicname, threadname, content=content)
             return redirect(url_for("topic", name=topicname))
-    else:
-        return render_template("error.html", message="Uuden viestiketjun luominen epäonnistui")
+        else:
+            return render_template("error.html", message="Uuden viestiketjun luominen epäonnistui")
     
 @app.route("/<topicname>/<threadname>/new-message", methods=["POST"])
 def new_message(topicname, threadname):
@@ -76,8 +90,6 @@ def new_message(topicname, threadname):
         return redirect(url_for("thread", name=topicname, thread=threadname))
     else:
         return render_template("error.html", message="Viestin lähetys epäonnistui")
-
-
 
 @app.route("/topic/<name>")
 def topic(name):

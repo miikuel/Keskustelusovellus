@@ -30,6 +30,7 @@ def register(username, password):
 
 def logout():
     del session["username"]
+    del session["admin"]
 
 def is_admin():
     return session["admin"]

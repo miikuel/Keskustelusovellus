@@ -1,8 +1,10 @@
 {% extends "layout.html" %}
+{% block pagenav %}
+<div class="navbar-div-child"><a class="navbar-link" href="/manage-topics">Hallinoi alueita</a></div>
+{% endblock %}
 {% block content %}
 {% if session.username %}
 {% if session.admin %}
-<a href="/new-topic">Luo uusi keskustelualue</a>
 {% endif %}
 <h2>Keskustelualueet</h2>
 <ul>

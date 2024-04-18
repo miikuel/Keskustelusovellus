@@ -18,7 +18,7 @@ def new_topic(topic_name):
         return False
     
 def get_topics():
-    sql = "SELECT name FROM topics"
+    sql = "SELECT name FROM topics ORDER BY name"
     result = db.session.execute(text(sql))
     names = result.fetchall()
     return names
@@ -83,3 +83,12 @@ def search_messages(query):
     result = db.session.execute(text(sql), {"query":"%"+query.lower()+"%"})
     messages = result.fetchall()
     return messages
+
+def delete_topic(name):
+    try:
+        sql = "DELETE FROM topics WHERE name=:name"
+        db.session.execute(text(sql), {"name":name})
+        db.session.commit()
+        return True
+    except:
+        return False

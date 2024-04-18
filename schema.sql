@@ -16,7 +16,7 @@ CREATE TABLE topics (
 CREATE TABLE threads (
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE,
-    topic_id INTEGER REFERENCES topics,
+    topic_id INTEGER REFERENCES topics ON DELETE CASCADE,
     created_by INTEGER REFERENCES users,
     created_at TIMESTAMP,
     edited BOOLEAN DEFAULT false
@@ -27,7 +27,7 @@ CREATE TABLE messages (
     message TEXT,
     created_by INTEGER REFERENCES users,
     thread_id INTEGER REFERENCES threads,
-    topic_id INTEGER REFERENCES topics,
+    topic_id INTEGER REFERENCES topics ON DELETE CASCADE,
     created_at TIMESTAMP,
     edited BOOLEAN DEFAULT false
 );
