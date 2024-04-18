@@ -29,9 +29,7 @@ def register():
         username = request.form["username"]
         password1 = request.form["password1"]
         password2 = request.form["password2"]
-        if username == "" or password1 == "" or password2 == "":
-            return redirect("/register")
-        elif password1 != password2:
+        if password1 != password2:
             return render_template("error.html", message="Salasanat eroavat")       
         if users.register(username, password1):
             return redirect("/")
