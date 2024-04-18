@@ -10,5 +10,13 @@
     <body>
         <div class="app-title">Keskustelusovellus</div>
         {% block content %}{% endblock %}
+        {% if session.username %}
+        <form action="/result" method="GET">
+            <hr>
+            <input type="text" name="query" placeholder="Hakusana">
+            <br>
+            <input type="submit" value="Hae viestejä" class="search-button">
+        </form>
+        {% endif %}
     </body>
 </html>
