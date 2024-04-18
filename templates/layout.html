@@ -8,12 +8,23 @@
         </title>
     </head>
     <body>
-        <div class="app-title">Keskustelusovellus</div>
+        <div class="app-title">
+            <a href="/">Keskustelusovellus</a>
+        </div>
+        {% if session.username %}
+            <p class="username-on-page">Kirjautuneena sisään nimimerkillä <b>{{ session.username }}</b>{% if session.admin %}<span class="admin-status"> (admin)</span>{% endif %}</p>
+            <hr>
+            <div class="navbar-div">
+                <div class="navbar-div-child"><a class="navbar-link" href="/">Etusivu</a></div>
+                <div class="navbar-div-child"><a class="navbar-link" href="/logout">Kirjaudu ulos</a></div>
+            </div>
+            <hr>
+        {% endif %}
         {% block content %}{% endblock %}
         {% if session.username %}
         <form action="/result" method="GET">
             <hr>
-            <input type="text" name="query" placeholder="Hakusana">
+            <input type="text" name="query" placeholder="Hakusana" required>
             <br>
             <input type="submit" value="Hae viestejä" class="search-button">
         </form>

@@ -1,8 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>{{ topicname.capitalize() }}</h2>
+<a class="topicname-link" href="{{ url_for('topic', name=topicname.lower()) }}">{{ topicname.capitalize() }}</a>
 <h3>{{ threadname.capitalize() }}</h3>
-<a href="/">Palaa etusivulle</a>
 <hr>
 {% for message in messages %}
 <p><b>#{{ message.rownumber }}</b></p>

@@ -3,10 +3,10 @@
 <h2>Luo uusi ketju</h2>
 <form action="{{url_for('new_thread', topicname=topicname)}}" method="POST">
 <p>Alue: {{ topicname }}</p>
-<p>Keskustelun aihe:<br>
-<input type="text" name="thread-name"></p>
-<p>Aloitusviesti:<br>
-<textarea name="content" rows="3" cols="40"></textarea>
+<p>Keskustelun aihe:</p>
+<input type="text" name="thread-name" required>
+<p>Aloitusviesti:</p>
+<textarea name="content" rows="3" cols="40" required></textarea>
 <br><br>
 <input type="submit" value="Luo uusi keskustelu">
 </form>

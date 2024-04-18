@@ -1,9 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 {% if session.username %}
-<p>Olet kirjautunut nimellä <b>{{ session.username }}</b></p>
-<a href="/logout">Kirjaudu ulos</a>
-<hr>
 {% if session.admin %}
 <a href="/new-topic">Luo uusi keskustelualue</a>
 {% endif %}

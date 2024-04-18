@@ -1,25 +1,11 @@
 body {
     font-family: Arial;
-    margin: 0px 0px 0px 6px;
-    
+    margin: 0px 0px 0px 6px;  
 }
 
 li {
     list-style: none;
     padding: 5px 0px;
-
-}
-
-.topicname-link {
-    color:rgb(2, 2, 73);
-    font-weight: 700;
-    text-decoration: none;
-    font-size: 18px;
-}
-
-.topicname-link:hover {
-    opacity: 0.5;
-    transition: 0.2s;
 }
 
 .app-title {
@@ -28,8 +14,49 @@ li {
     font-size: 25px;
     font-weight: 600;
     background-color: rgb(2, 2, 73);
-    color: white;
 }
+.app-title a {
+    color: white;
+    text-decoration: none;
+}
+
+.navbar-div {
+    display: flex;
+}
+
+.navbar-div-child {
+    margin-left: 20px;
+    margin-right: 40px;
+}
+
+.topicname-link {
+    color:rgb(1, 1, 139);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.topicname-link:hover {
+    color: rgb(34, 133, 172);
+    transition: 0.2s;
+}
+
+.username-on-page {
+    color: rgb(1, 1, 139);
+}
+
+.navbar-link {
+    color: rgb(1, 1, 139);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 14px;
+
+}
+
+.navbar-link:hover {
+    color: rgb(34, 133, 172);
+}
+
 
 .search-button {
     margin-top: 4px
@@ -50,4 +77,10 @@ li {
 
 .search-result-message {
     padding-left: 12px;
+}
+
+.admin-status {
+    font-weight: 700;
+    font-size: 14px;
+    color: rgb(153, 130, 2);
 }
