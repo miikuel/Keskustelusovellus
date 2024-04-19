@@ -31,6 +31,16 @@ def thread_creator(threadname):
         return True
     return False
 
+def message_author(id):
+    sql = "SELECT username FROM users u, messages m WHERE u.id=m.created_by AND m.id=:id AND username=:username"
+    result = db.session.execute(text(sql), {"id":id, "username":session["username"]})
+    username = result.fetchone()
+    if username:
+        return True
+    else:
+        return False
+
+
 def topic_threads(topic):
     sql = "SELECT id FROM topics WHERE LOWER(name)=:topic"
     result = db.session.execute(text(sql), {"topic":topic})
@@ -44,7 +54,7 @@ def get_messages(thread):
     sql = "SELECT id FROM threads WHERE name=:name"
     result = db.session.execute(text(sql), {"name":thread.capitalize()})
     thread_id = result.fetchone()[0]
-    sql = "SELECT ROW_NUMBER() OVER (ORDER BY m.created_at) AS rownumber, m.message, u.username, m.created_at FROM messages m, users u WHERE u.id=m.created_by AND thread_id=:thread_id ORDER BY m.created_at"
+    sql = "SELECT ROW_NUMBER() OVER (ORDER BY m.created_at) AS rownumber, m.message, u.username, m.created_at, m.id, m.deleted FROM messages m, users u WHERE u.id=m.created_by AND thread_id=:thread_id ORDER BY m.created_at"
     result =  db.session.execute(text(sql), {"thread_id":thread_id})
     messages = result.fetchall()
     return messages
@@ -114,6 +124,21 @@ def delete_thread(name):
     try:
         sql = "DELETE FROM threads WHERE LOWER(name)=:name"
         db.session.execute(text(sql), {"name":name.lower()})
+        db.session.commit()
+        return True
+    except:
+        return False
+    
+def delete_message(id, admin):
+    try:
+        if admin:
+            msg = "Ylläpitäjä on poistanut viestin"
+        else:
+            msg = "Käyttäjä on poistanut viestin"
+        sql = "UPDATE messages SET message=:message WHERE id=:id"
+        db.session.execute(text(sql), {"message":msg, "id":id})
+        sql = "UPDATE messages SET deleted = TRUE WHERE id=:id"
+        db.session.execute(text(sql), {"id":id})
         db.session.commit()
         return True
     except:

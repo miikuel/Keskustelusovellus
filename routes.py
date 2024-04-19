@@ -122,6 +122,19 @@ def thread(name, thread):
         return render_template("thread.html", topicname=name, threadname=thread, messages=messages, can_edit=can_edit)
     else:
         return redirect("/")
+
+@app.route("/delete-message/<id>/<topic>/<thread>")
+def delete_message(id, topic, thread):
+    if users.is_logged():
+        if topics.message_author(id):
+            admin = False
+        elif users.is_admin():
+            admin = True
+        if topics.delete_message(id, admin):
+            return redirect(url_for("thread", name=topic, thread=thread))
+        else:
+            return render_template("error.html", message="Viestin poistaminen epäonnistui")
+
     
 @app.route("/edit-thread/<topicname>/<threadname>", methods=["GET", "POST"])
 def edit_thread(topicname, threadname):
@@ -136,6 +149,7 @@ def edit_thread(topicname, threadname):
                 return redirect(url_for("thread", name=topicname.lower(), thread=newname.lower()))
             else:
                 return render_template("error.html", message="Ketjun nimen muuttaminen epäonnistui")
+            
 @app.route("/result")
 def result():
     if users.is_logged():

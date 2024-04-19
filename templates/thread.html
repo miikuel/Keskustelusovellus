@@ -13,6 +13,11 @@
 <p><b>{{ message.created_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
 <p><b>{{ message.username }} kirjoitti:</b></p>
 <p>{{ message.message }}</p>
+{% if message.username == session.username and message.deleted == False %}
+<p><a href="/">Muokkaa</a> &#124; <a href="{{ url_for('delete_message', id=message.id, topic=topicname.lower(), thread=threadname.lower()) }}">Poista</a></p>
+{% elif session.admin and message.deleted == False  %}
+<a href="{{ url_for('delete_message', id=message.id, topic=topicname.lower(), thread=threadname.lower()) }}"> Poista</a>
+{% endif %}
 <hr>
 {% endfor %}
 <form action="{{url_for('new_message', topicname=topicname, threadname=threadname)}}" method="POST">
