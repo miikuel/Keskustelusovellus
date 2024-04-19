@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Luo uusi ketju</h2>
+<h3>Luo uusi ketju alueelle</h3>
+<a class="topicname-link" href="{{ url_for('topic', name=topicname.lower()) }}">{{ topicname.capitalize() }}</a>
 <form action="{{url_for('new_thread', topicname=topicname)}}" method="POST">
-<p>Alue: {{ topicname }}</p>
 <p>Keskustelun aihe:</p>
 <input type="text" name="thread-name" required>
 <p>Aloitusviesti:</p>
@@ -10,5 +10,4 @@
 <br><br>
 <input type="submit" value="Luo uusi keskustelu">
 </form>
-<a href="/">Palaa etusivulle</a>
 {% endblock %}

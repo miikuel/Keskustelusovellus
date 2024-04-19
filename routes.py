@@ -67,6 +67,18 @@ def delete_topic():
         return redirect("/manage-topics")
     else:
         return render_template("error.html", message="Poistaminen epäonnistui")
+    
+@app.route("/delete-thread", methods=["POST"])
+def delete_thread():
+    threadname = request.form["threadname"]
+    topicname = request.form["topicname"]
+    if users.is_admin() or topics.thread_creator(threadname):
+        if topics.delete_thread(threadname):
+            return redirect(url_for("topic", name=topicname))
+        else:
+            return render_template("error.html", message="Ketjun poistaminen epäonnistui")
+    else:
+        return redirect("/")
         
 @app.route("/new-thread/<topicname>", methods=["GET", "POST"])
 def new_thread(topicname):
@@ -77,7 +89,7 @@ def new_thread(topicname):
             threadname = request.form["thread-name"]
             content = request.form["content"]
             topics.new_thread(topicname, threadname, content=content)
-            return redirect(url_for("topic", name=topicname))
+            return redirect(url_for("thread", name=topicname, thread=threadname))
         else:
             return render_template("error.html", message="Uuden viestiketjun luominen epäonnistui")
     
@@ -103,10 +115,27 @@ def topic(name):
 def thread(name, thread):
     if users.is_logged():
         messages = topics.get_messages(thread)
-        return render_template("thread.html", topicname=name, threadname=thread, messages=messages)
+        if users.is_admin() or topics.thread_creator(thread):
+            can_edit = True
+        else:
+            can_edit = False
+        return render_template("thread.html", topicname=name, threadname=thread, messages=messages, can_edit=can_edit)
     else:
         return redirect("/")
     
+@app.route("/edit-thread/<topicname>/<threadname>", methods=["GET", "POST"])
+def edit_thread(topicname, threadname):
+    if not users.is_logged():
+        return redirect("/")
+    if users.is_admin() or topics.thread_creator(threadname):
+        if request.method == "GET":
+            return render_template("edit-thread.html", topicname=topicname, threadname=threadname)
+        if request.method == "POST":
+            newname = request.form["newname"]
+            if topics.rename_thread(threadname, newname):
+                return redirect(url_for("thread", name=topicname.lower(), thread=newname.lower()))
+            else:
+                return render_template("error.html", message="Ketjun nimen muuttaminen epäonnistui")
 @app.route("/result")
 def result():
     if users.is_logged():

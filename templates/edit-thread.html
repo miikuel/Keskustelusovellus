@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>Muokkaa ketjua</h3>
+<a class="topicname-link" href="{{url_for('thread', name=topicname, thread=threadname)}}">{{ threadname.capitalize() }}</a>
+<br><br>
+<form action="{{ url_for('edit_thread', topicname=topicname, threadname=threadname) }}" method="POST">
+<label for="newname">Anna ketjulle uusi nimi:</label><br>
+<input type="text" name="newname" required>
+<input type="submit" value="Päivitä">
+</form>
+<h3>Poista ketju</h3>
+<p><i>HUOM! Toiminto poistaa ketjun ja siinä olevat viestit lopullisesti</i></p>
+<form action="/delete-thread" method="POST">
+   <input type="submit" value="Poista ketju ja siinä olevat viestit">
+   <input type="hidden" name="threadname" value="{{ threadname  }}">
+   <input type="hidden" name="topicname" value="{{ topicname.lower() }}">
+</form>
+{% endblock %}

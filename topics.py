@@ -23,6 +23,14 @@ def get_topics():
     names = result.fetchall()
     return names
 
+def thread_creator(threadname):
+    sql = "SELECT t.name, u.username FROM threads t, users u WHERE u.id=t.created_by AND LOWER(t.name)=:name AND u.username=:username"
+    result = db.session.execute(text(sql), {"name":threadname, "username":session["username"]})
+    creator = result.fetchone()
+    if creator:
+        return True
+    return False
+
 def topic_threads(topic):
     sql = "SELECT id FROM topics WHERE LOWER(name)=:topic"
     result = db.session.execute(text(sql), {"topic":topic})
@@ -88,6 +96,24 @@ def delete_topic(name):
     try:
         sql = "DELETE FROM topics WHERE name=:name"
         db.session.execute(text(sql), {"name":name})
+        db.session.commit()
+        return True
+    except:
+        return False
+    
+def rename_thread(name, newname):
+    try:
+        sql = "UPDATE threads SET name=:newname WHERE LOWER(name)=:name"
+        db.session.execute(text(sql), {"newname":newname, "name":name.lower()})
+        db.session.commit()
+        return True
+    except:
+        return False
+
+def delete_thread(name):
+    try:
+        sql = "DELETE FROM threads WHERE LOWER(name)=:name"
+        db.session.execute(text(sql), {"name":name.lower()})
         db.session.commit()
         return True
     except:

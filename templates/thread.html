@@ -1,4 +1,9 @@
 {% extends "layout.html" %}
+{% block pagenav %}
+{% if can_edit %}
+<div class="navbar-div-child"><a class="navbar-link" href="{{url_for('edit_thread', topicname=topicname, threadname=threadname)}}">Muokkaa ketjua</a></div>
+{% endif %}
+{% endblock %}
 {% block content %}
 <a class="topicname-link" href="{{ url_for('topic', name=topicname.lower()) }}">{{ topicname.capitalize() }}</a>
 <h3>{{ threadname.capitalize() }}</h3>

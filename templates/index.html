@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block pagenav %}
+{% if session.admin %}
 <div class="navbar-div-child"><a class="navbar-link" href="/manage-topics">Hallinoi alueita</a></div>
+{% endif %}
 {% endblock %}
 {% block content %}
 {% if session.username %}
-{% if session.admin %}
-{% endif %}
 <h2>Keskustelualueet</h2>
 <ul>
 {% for topic in topics %}
