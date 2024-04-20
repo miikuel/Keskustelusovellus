@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>Muokkaa viestiä</h3>
+<p><a class="topicname-link" href="{{ url_for('topic', name=message.topicname.lower()) }}">{{ message.topicname }}</a> / 
+<a class="topicname-link" href="{{url_for('thread', name=message.topicname.lower(), thread=message.threadname.lower())}}">{{ message.threadname }}</a></p>
+<p><b>Viesti:</b></p>
+<p>{{ message.message }}</p>
+<hr>
+<form action="{{ url_for('edit_message', id=message.id) }}" method="POST">
+    <p>Muokkaa:<br>
+    <textarea name="content" rows="3" cols="40" required></textarea>
+    <br><br>
+    <input type="hidden" name="topicname" value="{{ message.topicname }}">
+    <input type="hidden" name="threadname" value="{{ message.threadname }}">
+    <input type="submit" value="Tallenna muutokset">
+</form>
+
+{% endblock %}

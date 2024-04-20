@@ -122,6 +122,24 @@ def thread(name, thread):
         return render_template("thread.html", topicname=name, threadname=thread, messages=messages, can_edit=can_edit)
     else:
         return redirect("/")
+    
+@app.route("/edit-message/<id>", methods=["GET", "POST"])
+def edit_message(id):
+    if users.is_logged:
+        if request.method == "GET":
+            message = topics.message_for_edit(id)
+            if message:
+                return render_template("edit-message.html", message=message)
+            else:
+                return redirect("/")
+        if request.method == "POST":
+            new_message = request.form["content"]
+            topicname = request.form["topicname"]
+            threadname = request.form["threadname"]
+            if topics.edit_message(id, new_message):
+                return redirect(url_for("thread", name=topicname, thread=threadname))
+    else:
+        return redirect("/")
 
 @app.route("/delete-message/<id>/<topic>/<thread>")
 def delete_message(id, topic, thread):

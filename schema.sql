@@ -29,6 +29,7 @@ CREATE TABLE messages (
     thread_id INTEGER REFERENCES threads ON DELETE CASCADE,
     topic_id INTEGER REFERENCES topics ON DELETE CASCADE,
     created_at TIMESTAMP,
+    edited_at TIMESTAMP,
     edited BOOLEAN DEFAULT false,
     deleted BOOLEAN DEFAULT false
 );

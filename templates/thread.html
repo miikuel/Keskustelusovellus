@@ -5,16 +5,19 @@
 {% endif %}
 {% endblock %}
 {% block content %}
-<a class="topicname-link" href="{{ url_for('topic', name=topicname.lower()) }}">{{ topicname.capitalize() }}</a>
-<h3>{{ threadname.capitalize() }}</h3>
+<p><a class="topicname-link" href="{{ url_for('topic', name=topicname.lower()) }}">{{ topicname.capitalize() }}</a> / 
+<a class="topicname-link" href="{{url_for('thread', name=topicname.lower(), thread=threadname.lower())}}">{{ threadname.capitalize() }}</a></p>
 <hr>
 {% for message in messages %}
 <p><b>#{{ message.rownumber }}</b></p>
 <p><b>{{ message.created_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
+{% if message.edited_at %}
+<p><b>MUOKATTU {{ message.edited_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
+{% endif %}
 <p><b>{{ message.username }} kirjoitti:</b></p>
 <p>{{ message.message }}</p>
 {% if message.username == session.username and message.deleted == False %}
-<p><a href="/">Muokkaa</a> &#124; <a href="{{ url_for('delete_message', id=message.id, topic=topicname.lower(), thread=threadname.lower()) }}">Poista</a></p>
+<p><a href="{{ url_for('edit_message', id=message.id) }}">Muokkaa</a> &#124; <a href="{{ url_for('delete_message', id=message.id, topic=topicname.lower(), thread=threadname.lower()) }}">Poista</a></p>
 {% elif session.admin and message.deleted == False  %}
 <a href="{{ url_for('delete_message', id=message.id, topic=topicname.lower(), thread=threadname.lower()) }}"> Poista</a>
 {% endif %}
@@ -22,7 +25,7 @@
 {% endfor %}
 <form action="{{url_for('new_message', topicname=topicname, threadname=threadname)}}" method="POST">
     <p>Kirjoita uusi viesti:<br>
-    <textarea name="content" rows="3" cols="40"></textarea>
+    <textarea name="content" rows="3" cols="40" required></textarea>
     <br><br>
     <input type="submit" value="Lähetä viesti">
     </form>

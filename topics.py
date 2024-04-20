@@ -1,7 +1,6 @@
 from db import db
 from flask import session
 from sqlalchemy.sql import text
-from datetime import datetime
 
 def new_topic(topic_name):
     sql = "SELECT id, admin FROM users where username=:username"
@@ -10,8 +9,8 @@ def new_topic(topic_name):
     if not user.admin:
         return False
     try:
-        sql = "INSERT INTO topics (name, created_by, created_at) VALUES (:name, :created_by, :date)"
-        db.session.execute(text(sql), {"name":topic_name.capitalize(), "created_by":user.id, "date":datetime.now().replace(microsecond=0)})
+        sql = "INSERT INTO topics (name, created_by, created_at) VALUES (:name, :created_by, NOW())"
+        db.session.execute(text(sql), {"name":topic_name.capitalize(), "created_by":user.id})
         db.session.commit()
         return True
     except:
@@ -54,7 +53,7 @@ def get_messages(thread):
     sql = "SELECT id FROM threads WHERE name=:name"
     result = db.session.execute(text(sql), {"name":thread.capitalize()})
     thread_id = result.fetchone()[0]
-    sql = "SELECT ROW_NUMBER() OVER (ORDER BY m.created_at) AS rownumber, m.message, u.username, m.created_at, m.id, m.deleted FROM messages m, users u WHERE u.id=m.created_by AND thread_id=:thread_id ORDER BY m.created_at"
+    sql = "SELECT ROW_NUMBER() OVER (ORDER BY m.created_at) AS rownumber, m.message, u.username, m.created_at, m.edited_at, m.id, m.deleted FROM messages m, users u WHERE u.id=m.created_by AND thread_id=:thread_id ORDER BY m.created_at"
     result =  db.session.execute(text(sql), {"thread_id":thread_id})
     messages = result.fetchall()
     return messages
@@ -67,11 +66,11 @@ def new_thread(topicname, threadname, content):
         sql = "SELECT id FROM users WHERE username=:username"
         result = db.session.execute(text(sql), {"username":session["username"]})
         user_id = result.fetchone()[0]
-        sql = "INSERT INTO threads (name, topic_id, created_by, created_at) VALUES (:threadname, :topic_id, :user_id, :created_at) RETURNING id"
-        result = db.session.execute(text(sql), {"threadname":threadname.capitalize(), "topic_id":topic_id, "user_id":user_id, "created_at":datetime.now().replace(microsecond=0)})
+        sql = "INSERT INTO threads (name, topic_id, created_by, created_at) VALUES (:threadname, :topic_id, :user_id, NOW()) RETURNING id"
+        result = db.session.execute(text(sql), {"threadname":threadname.capitalize(), "topic_id":topic_id, "user_id":user_id})
         thread_id = result.fetchone()[0]
-        sql = "INSERT INTO messages (message, created_by, thread_id, topic_id, created_at) VALUES (:message, :user_id, :thread_id, :topic_id, :created_at)"
-        db.session.execute(text(sql), {"message":content, "user_id":user_id, "thread_id":thread_id, "topic_id":topic_id, "created_at":datetime.now().replace(microsecond=0)})
+        sql = "INSERT INTO messages (message, created_by, thread_id, topic_id, created_at) VALUES (:message, :user_id, :thread_id, :topic_id, NOW())"
+        db.session.execute(text(sql), {"message":content, "user_id":user_id, "thread_id":thread_id, "topic_id":topic_id})
         db.session.commit()
         return True
     except:
@@ -88,8 +87,8 @@ def new_message(thread, message):
         sql = "SELECT id FROM users WHERE username=:username"
         result = db.session.execute(text(sql), {"username":session["username"]})
         user_id = result.fetchone()[0]
-        sql = "INSERT INTO messages (message, created_by, thread_id, topic_id, created_at) VALUES (:message, :user_id, :thread_id, :topic_id, :created_at)"
-        db.session.execute(text(sql), {"message":message, "user_id":user_id, "thread_id":thread_id, "topic_id":topic_id, "created_at":datetime.now().replace(microsecond=0)})
+        sql = "INSERT INTO messages (message, created_by, thread_id, topic_id, created_at) VALUES (:message, :user_id, :thread_id, :topic_id, NOW())"
+        db.session.execute(text(sql), {"message":message, "user_id":user_id, "thread_id":thread_id, "topic_id":topic_id})
         db.session.commit()
         return True
     except:
@@ -138,6 +137,31 @@ def delete_message(id, admin):
         sql = "UPDATE messages SET message=:message WHERE id=:id"
         db.session.execute(text(sql), {"message":msg, "id":id})
         sql = "UPDATE messages SET deleted = TRUE WHERE id=:id"
+        db.session.execute(text(sql), {"id":id})
+        db.session.commit()
+        return True
+    except:
+        return False
+    
+def message_for_edit(id):
+    try:
+        sql = "SELECT m.id, m.message, t.name topicname, th.name threadname FROM users u, messages m, topics t, threads th WHERE u.id=m.created_by AND t.id=m.topic_id AND th.id=m.thread_id AND m.id=:id AND u.username=:username"
+        result = db.session.execute(text(sql), {"id":id, "username":session["username"]})
+        message = result.fetchone()
+        if not message:
+            return False
+        return message
+    except:
+        return False
+    
+def edit_message(id, new_message):
+    try:
+        sql = "SELECT id FROM users WHERE username=:username"
+        result = db.session.execute(text(sql), {"username":session["username"]})
+        user_id = result.fetchone().id
+        sql = "UPDATE messages SET message=:newmessage WHERE id=:id AND created_by=:userid"
+        db.session.execute(text(sql), {"newmessage": new_message,"id":id, "userid":user_id})
+        sql = "UPDATE messages SET edited=TRUE, edited_at=NOW() WHERE id=:id"
         db.session.execute(text(sql), {"id":id})
         db.session.commit()
         return True
