@@ -4,6 +4,8 @@
 <form action="/new-topic" method="POST">
 <label for="topic-name">Alueen nimi:</label><br>
 <input type="text" name="topic-name" required>
+<br><input type="checkbox" name="secret" value="{{ True }}">
+<label for="secret">Salainen alue </label><br><br>
 <input type="submit" value="Luo aihealue">
 </form>
 <h3>Poista keskustelualue</h3>

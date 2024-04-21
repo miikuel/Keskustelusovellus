@@ -12,6 +12,7 @@ def login(username, password):
     else:
         if check_password_hash(user.password, password):
             session["username"] = username
+            session["user_id"] = user.id
             session["admin"] = user.admin
             return True
         else:
@@ -20,8 +21,20 @@ def login(username, password):
 def register(username, password):
     hash_value = generate_password_hash(password)
     try:
-        sql = "INSERT INTO users (username, password, registered_at) VALUES (:username, :password, NOW())"
-        db.session.execute(text(sql), {"username":username, "password":hash_value})
+        sql = "INSERT INTO users (username, password, registered_at) VALUES (:username, :password, NOW()) RETURNING id"
+        result = db.session.execute(text(sql), {"username":username, "password":hash_value})
+        id = result.fetchone()[0]
+        if id == 1:
+            sql = "UPDATE users SET admin=TRUE WHERE id=1"
+            db.session.execute(text(sql))
+            db.session.commit()
+            return True
+        sql = "SELECT id from topics WHERE secret=FALSE"
+        result = db.session.execute(text(sql))
+        topic_ids = result.fetchall()
+        for topic_id in topic_ids:
+            sql = "INSERT INTO topic_permissions (topic_id, user_id) VALUES (:topic_id, :id)"
+            db.session.execute(text(sql), {"topic_id":topic_id[0], "id":id})
         db.session.commit()
         return True
     except:
@@ -29,6 +42,7 @@ def register(username, password):
 
 def logout():
     del session["username"]
+    del session["user_id"]
     del session["admin"]
 
 def is_admin():

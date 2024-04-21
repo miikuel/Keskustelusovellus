@@ -9,7 +9,12 @@
 <h2>Keskustelualueet</h2>
 <ul>
 {% for topic in topics %}
-<li><a class="topicname-link" href="{{ url_for('topic', name=topic.name.lower()) }}">{{ topic.name }}</a></li>
+<li>
+    <a class="topicname-link" href="{{ url_for('topic', name=topic.name.lower()) }}">{{ topic.name }}</a>
+    {% if topic.secret %}
+    <span class="admin-status"> (salainen alue)</span>
+    {% endif %}
+</li>
 {% endfor %}
 </ul>
 {% else %}

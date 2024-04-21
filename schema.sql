@@ -9,8 +9,15 @@ CREATE TABLE users (
 CREATE TABLE topics (
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE,
+    secret BOOLEAN NOT NULL,
     created_by INTEGER REFERENCES users,
     created_at TIMESTAMP
+);
+
+CREATE TABLE topic_permissions (
+    id SERIAL PRIMARY KEY,
+    topic_id INTEGER REFERENCES topics ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users ON DELETE CASCADE
 );
 
 CREATE TABLE threads (

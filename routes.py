@@ -53,7 +53,11 @@ def new_topic():
     if not users.is_admin():
         return redirect("/")
     topic_name = request.form["topic-name"]
-    if topics.new_topic(topic_name):
+    try:
+        secret = request.form["secret"]
+    except:
+        secret = False
+    if topics.new_topic(topic_name, secret):
         return redirect("/")
     else:
         return render_template("error.html", message="Uuden aihealueen luominen ei onnistunut")
@@ -82,7 +86,9 @@ def delete_thread():
         
 @app.route("/new-thread/<topicname>", methods=["GET", "POST"])
 def new_thread(topicname):
-    if users.is_logged():
+    if not users.is_logged():
+        return redirect("/")
+    if topics.has_permission(topicname):
         if request.method == "GET":
             return render_template("new-thread.html", topicname=topicname)
         if request.method == "POST":
@@ -92,36 +98,49 @@ def new_thread(topicname):
             return redirect(url_for("thread", name=topicname, thread=threadname))
         else:
             return render_template("error.html", message="Uuden viestiketjun luominen epäonnistui")
+    else:
+        return redirect("/")
     
 @app.route("/<topicname>/<threadname>/new-message", methods=["POST"])
 def new_message(topicname, threadname):
     if not users.is_logged():
         return redirect("/")
-    message = request.form["content"]
-    if topics.new_message(threadname, message):
-        return redirect(url_for("thread", name=topicname, thread=threadname))
+    if topics.has_permission(topicname):
+        message = request.form["content"]
+        if topics.new_message(threadname, message):
+            return redirect(url_for("thread", name=topicname, thread=threadname))
+        else:
+            return render_template("error.html", message="Viestin lähetys epäonnistui")
     else:
-        return render_template("error.html", message="Viestin lähetys epäonnistui")
+        return redirect("/")
 
 @app.route("/topic/<name>")
 def topic(name):
-    if users.is_logged():
+    if not users.is_logged():
+        return redirect("/")
+    if topics.has_permission(name):
         threads = topics.topic_threads(name)
-        return render_template("topic.html", topicname=name, topicthreads=threads)
+        secret = topics.is_secret(name)
+        return render_template("topic.html", topicname=name, topicthreads=threads, secret=secret)
     else:
         return redirect("/")
+
     
 @app.route("/topic/<name>/<thread>")
 def thread(name, thread):
-    if users.is_logged():
+    if not users.is_logged():
+        return redirect("/")
+    if topics.has_permission(name):
         messages = topics.get_messages(thread)
+        secret = topics.is_secret(name)
         if users.is_admin() or topics.thread_creator(thread):
             can_edit = True
         else:
             can_edit = False
-        return render_template("thread.html", topicname=name, threadname=thread, messages=messages, can_edit=can_edit)
+        return render_template("thread.html", topicname=name, threadname=thread, messages=messages, can_edit=can_edit, secret=secret)
     else:
         return redirect("/")
+
     
 @app.route("/edit-message/<id>", methods=["GET", "POST"])
 def edit_message(id):

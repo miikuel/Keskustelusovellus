@@ -5,14 +5,19 @@
 {% endif %}
 {% endblock %}
 {% block content %}
-<p><a class="topicname-link" href="{{ url_for('topic', name=topicname.lower()) }}">{{ topicname.capitalize() }}</a> / 
-<a class="topicname-link" href="{{url_for('thread', name=topicname.lower(), thread=threadname.lower())}}">{{ threadname.capitalize() }}</a></p>
+<div class="navbar-div">
+<div class="thread-div"><a class="topicname-link" href="{{ url_for('topic', name=topicname.lower()) }}">{{ topicname.capitalize() }}</a></div>
+{% if secret %}
+<div class="secret-div secret-header"><p> (salainen alue)</p></div>
+{% endif %}
+<h3 class="thread-header"> / {{ threadname.capitalize() }}</h3>
+</div>
 <hr>
 {% for message in messages %}
 <p><b>#{{ message.rownumber }}</b></p>
 <p><b>{{ message.created_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
 {% if message.edited_at %}
-<p><b>MUOKATTU {{ message.edited_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
+<p><b>Muokattu {{ message.edited_at.strftime('%d.%m.%Y - %H:%M') }}</b></p>
 {% endif %}
 <p><b>{{ message.username }} kirjoitti:</b></p>
 <p>{{ message.message }}</p>

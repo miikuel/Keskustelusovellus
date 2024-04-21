@@ -2,23 +2,37 @@ from db import db
 from flask import session
 from sqlalchemy.sql import text
 
-def new_topic(topic_name):
-    sql = "SELECT id, admin FROM users where username=:username"
-    result = db.session.execute(text(sql), {"username":session["username"]})
-    user = result.fetchone()
-    if not user.admin:
-        return False
+def new_topic(topic_name, secret):
+    if secret:
+        secret = True
+    else:
+        secret = False
     try:
-        sql = "INSERT INTO topics (name, created_by, created_at) VALUES (:name, :created_by, NOW())"
-        db.session.execute(text(sql), {"name":topic_name.capitalize(), "created_by":user.id})
+        sql = "INSERT INTO topics (name, secret, created_by, created_at) VALUES (:name, :secret, :created_by, NOW()) RETURNING id"
+        result = db.session.execute(text(sql), {"name":topic_name.capitalize(), "secret":secret, "created_by":session["user_id"]})
+        topic_id = result.fetchone()[0]
+        if not secret:
+            sql = "SELECT id FROM users"
+            result = db.session.execute(text(sql))
+            user_ids = result.fetchall()
+            for user_id in user_ids:
+                sql = "INSERT INTO topic_permissions (topic_id, user_id) VALUES (:topic_id, :user_id)"
+                db.session.execute(text(sql), {"topic_id": topic_id, "user_id":user_id.id})
+        else:
+            sql = "SELECT id FROM users WHERE admin=TRUE"
+            result = db.session.execute(text(sql))
+            user_ids = result.fetchall()
+            for user_id in user_ids:
+                sql = "INSERT INTO topic_permissions (topic_id, user_id) VALUES (:topic_id, :user_id)"
+                db.session.execute(text(sql), {"topic_id": topic_id, "user_id":user_id.id})
         db.session.commit()
         return True
     except:
         return False
     
 def get_topics():
-    sql = "SELECT name FROM topics ORDER BY name"
-    result = db.session.execute(text(sql))
+    sql = "SELECT name, secret FROM topics t, topic_permissions tp WHERE t.id=tp.topic_id AND tp.user_id=:user_id ORDER BY name"
+    result = db.session.execute(text(sql), {"user_id":session["user_id"]})
     names = result.fetchall()
     return names
 
@@ -96,8 +110,8 @@ def new_message(thread, message):
     
 
 def search_messages(query):
-    sql = "SELECT m.message, m.created_at, m.edited, m.created_by, users.username, topics.name topicname, threads.name threadname FROM messages m, topics, threads, users WHERE topics.id=m.topic_id AND threads.id=m.thread_id AND users.id=m.created_by AND LOWER(m.message) LIKE :query"
-    result = db.session.execute(text(sql), {"query":"%"+query.lower()+"%"})
+    sql = "SELECT m.message, m.created_at, m.edited, m.created_by, users.username, topics.name topicname, threads.name threadname FROM messages m, topics, threads, users, topic_permissions tp WHERE topics.id=m.topic_id AND threads.id=m.thread_id AND users.id=m.created_by AND topics.id=tp.topic_id AND tp.user_id=:user_id AND LOWER(m.message) LIKE :query"
+    result = db.session.execute(text(sql), {"user_id":session["user_id"],"query":"%"+query.lower()+"%"})
     messages = result.fetchall()
     return messages
 
@@ -166,4 +180,22 @@ def edit_message(id, new_message):
         db.session.commit()
         return True
     except:
+        return False
+    
+def has_permission(topicname):
+    sql = "SELECT tp.topic_id, tp.user_id FROM topic_permissions tp, topics t WHERE t.id=tp.topic_id AND tp.user_id=:user_id AND LOWER(t.name)=:topicname"
+    result = db.session.execute(text(sql), {"user_id":session["user_id"], "topicname":topicname.lower()})
+    permission = result.fetchone()
+    if permission:
+        return True
+    else:
+        return False
+    
+def is_secret(topicname):
+    sql = "SELECT secret FROM topics WHERE LOWER(name)=:topicname"
+    result = db.session.execute(text(sql), {"topicname":topicname.lower()})
+    secret = result.fetchone()[0]
+    if secret:
+        return True
+    else:
         return False

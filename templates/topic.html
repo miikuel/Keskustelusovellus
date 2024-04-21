@@ -3,7 +3,12 @@
 <div class="navbar-div-child"><a class="navbar-link" href="{{url_for('new_thread', topicname=topicname)}}">Luo uusi ketju</a></div>
 {% endblock %}
 {% block content %}
-<h2>{{ topicname.capitalize() }}</h2>
+<div class="navbar-div">
+<div><h2>{{ topicname.capitalize() }}</h2></div> 
+{% if secret %}
+<div class="secret-div secret-header"><p> (salainen alue)</p></div>
+{% endif %}
+</div>
 <hr>
 <ul>
 {% for thread in topicthreads %}
