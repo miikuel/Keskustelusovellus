@@ -64,8 +64,8 @@ def topic_threads(topic):
     return threads
 
 def get_messages(thread):
-    sql = "SELECT id FROM threads WHERE name=:name"
-    result = db.session.execute(text(sql), {"name":thread.capitalize()})
+    sql = "SELECT id FROM threads WHERE LOWER(name)=:name"
+    result = db.session.execute(text(sql), {"name":thread.lower()})
     thread_id = result.fetchone()[0]
     sql = "SELECT ROW_NUMBER() OVER (ORDER BY m.created_at) AS rownumber, m.message, u.username, m.created_at, m.edited_at, m.id, m.deleted FROM messages m, users u WHERE u.id=m.created_by AND thread_id=:thread_id ORDER BY m.created_at"
     result =  db.session.execute(text(sql), {"thread_id":thread_id})
@@ -74,8 +74,8 @@ def get_messages(thread):
 
 def new_thread(topicname, threadname, content):
     try:
-        sql = "SELECT id FROM topics WHERE name=:name"
-        result = db.session.execute(text(sql), {"name":topicname.capitalize()})
+        sql = "SELECT id FROM topics WHERE LOWER(name)=:name"
+        result = db.session.execute(text(sql), {"name":topicname.lower()})
         topic_id = result.fetchone()[0]
         sql = "SELECT id FROM users WHERE username=:username"
         result = db.session.execute(text(sql), {"username":session["username"]})
@@ -93,8 +93,8 @@ def new_thread(topicname, threadname, content):
 
 def new_message(thread, message):
     try:
-        sql = "SELECT id, topic_id FROM threads WHERE name=:name"
-        result = db.session.execute(text(sql), {"name":thread.capitalize()})
+        sql = "SELECT id, topic_id FROM threads WHERE LOWER(name)=:name"
+        result = db.session.execute(text(sql), {"name":thread.lower()})
         ids = result.fetchone()
         thread_id = ids[0]
         topic_id = ids[1]
