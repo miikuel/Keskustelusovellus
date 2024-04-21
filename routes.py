@@ -58,7 +58,7 @@ def new_topic():
     except:
         secret = False
     if topics.new_topic(topic_name, secret):
-        return redirect("/")
+        return render_template("success.html", message="Uusi alue luotu onnistuneesti!")
     else:
         return render_template("error.html", message="Uuden aihealueen luominen ei onnistunut")
     
@@ -124,7 +124,24 @@ def topic(name):
         return render_template("topic.html", topicname=name, topicthreads=threads, secret=secret)
     else:
         return redirect("/")
-
+    
+@app.route("/topic/<name>/permissions", methods=["GET", "POST"])
+def topic_permissions(name):
+    if not users.is_logged():
+        return redirect("/")
+    if not users.is_admin():
+        return redirect("/")
+    if not topics.topic_exists(name):
+        return redirect("/")
+    if request.method == "GET":
+        userlist = topics.no_permissions(name)
+        return render_template("topic-permissions.html", userlist=userlist, topicname=name)
+    if request.method == "POST":
+        username = request.form["username"]
+        if topics.add_permissions(name, username):
+            return render_template("success.html", message="Käyttäjäoikeudet lisätty")
+        return render_template("error.html", message="Käyttäjäoikeuksien lisääminen ei onnistunut")
+    
     
 @app.route("/topic/<name>/<thread>")
 def thread(name, thread):
@@ -177,9 +194,12 @@ def delete_message(id, topic, thread):
 def edit_thread(topicname, threadname):
     if not users.is_logged():
         return redirect("/")
+    if not topics.topic_exists(topicname):
+        return redirect("/")
     if users.is_admin() or topics.thread_creator(threadname):
         if request.method == "GET":
-            return render_template("edit-thread.html", topicname=topicname, threadname=threadname)
+            secret = topics.is_secret(topicname)
+            return render_template("edit-thread.html", topicname=topicname, threadname=threadname, secret=secret)
         if request.method == "POST":
             newname = request.form["newname"]
             if topics.rename_thread(threadname, newname):

@@ -1,12 +1,15 @@
 {% extends "layout.html" %}
 {% block pagenav %}
+{% if session.admin and secret %}
+<div class="navbar-div-child"><a class="navbar-link" href="{{url_for('topic_permissions', name=topicname)}}">Lisää käyttäjiä alueelle</a></div>
+{% endif %}
 <div class="navbar-div-child"><a class="navbar-link" href="{{url_for('new_thread', topicname=topicname)}}">Luo uusi ketju</a></div>
 {% endblock %}
 {% block content %}
 <div class="navbar-div">
 <div><h2>{{ topicname.capitalize() }}</h2></div> 
 {% if secret %}
-<div class="secret-div secret-header"><p> (salainen alue)</p></div>
+<div class="secret-div"><p class="secret-header"> (salainen alue)</p></div>
 {% endif %}
 </div>
 <hr>

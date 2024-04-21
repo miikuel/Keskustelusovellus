@@ -199,3 +199,32 @@ def is_secret(topicname):
         return True
     else:
         return False
+    
+def topic_exists(name):
+    sql = "SELECT name FROM topics WHERE LOWER(name)=:name"
+    result =db.session.execute(text(sql), {"name":name.lower()}).fetchone()
+    if result:
+        return True
+    else:
+        return False
+
+def no_permissions(name):
+    sql = "SELECT u.username FROM users u WHERE u.id NOT IN (SELECT tp.user_id FROM topic_permissions tp, topics t WHERE tp.topic_id=t.id AND LOWER(t.name)=:name)"
+    result = db.session.execute(text(sql), {"name":name.lower()})
+    userlist = result.fetchall()
+    return userlist
+
+def add_permissions(name, username):
+    try:
+        sql = "SELECT id FROM users WHERE username=:username"
+        result = db.session.execute(text(sql), {"username":username})
+        user_id = result.fetchone()[0]
+        sql = "SELECT id FROM topics WHERE LOWER(name)=:name"
+        result = db.session.execute(text(sql), {"name":name.lower()})
+        topic_id = result.fetchone()[0]
+        sql = "INSERT INTO topic_permissions (topic_id, user_id) VALUES (:topic_id, :user_id)"
+        db.session.execute(text(sql), {"topic_id":topic_id, "user_id":user_id})
+        db.session.commit()
+        return True
+    except:
+        return False

@@ -8,7 +8,7 @@
 <div class="navbar-div">
 <div class="thread-div"><a class="topicname-link" href="{{ url_for('topic', name=topicname.lower()) }}">{{ topicname.capitalize() }}</a></div>
 {% if secret %}
-<div class="secret-div secret-header"><p> (salainen alue)</p></div>
+<div class="secret-div"><p class="secret-header"> (salainen alue)</p></div>
 {% endif %}
 <h3 class="thread-header"> / {{ threadname.capitalize() }}</h3>
 </div>

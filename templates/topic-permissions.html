@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<br></be><a class="topicname-link" href="{{url_for('topic', name=topicname.lower())}}">{{ topicname.capitalize() }} <span class="admin-status"> (salainen alue)</span></a>
+<h3>Lisää alueelle käyttäjiä</h3>
+{% if not userlist %}
+    <p>Kaikilla käyttäjillä on jo oikeudet alueelle</p>
+{% else %}
+<form action="{{url_for('topic_permissions', name=topicname.lower())}}" method="POST">
+<label for="username">Valitse käyttäjä jolle lisätään oikeudet alueelle:</label><br><br>
+<select name="username">
+    {% for user in userlist %}
+        <option value="{{ user[0] }}">{{ user[0] }}</option>
+    {% endfor %}
+</select>
+<input type="submit" value="Lisää oikeudet">
+</form>
+{% endif %}
+{% endblock %}
