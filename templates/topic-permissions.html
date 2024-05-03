@@ -13,6 +13,7 @@
     {% endfor %}
 </select>
 <input type="submit" value="Lisää oikeudet">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% endif %}
 {% with messages = get_flashed_messages() %}

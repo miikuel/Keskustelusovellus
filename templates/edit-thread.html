@@ -10,6 +10,7 @@
 <label for="newname">Anna ketjulle uusi nimi:</label><br>
 <input type="text" name="newname" required>
 <input type="submit" value="Päivitä">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 <h3>Poista ketju</h3>
 <p><i>HUOM! Toiminto poistaa ketjun ja siinä olevat viestit lopullisesti</i></p>
@@ -17,6 +18,7 @@
    <input type="submit" value="Poista ketju ja siinä olevat viestit">
    <input type="hidden" name="threadname" value="{{ threadname  }}">
    <input type="hidden" name="topicname" value="{{ topicname.lower() }}">
+   <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% with messages = get_flashed_messages() %}
   {% if messages %}

@@ -33,6 +33,7 @@
     <textarea name="content" rows="3" cols="40" required></textarea>
     <br><br>
     <input type="submit" value="Lähetä viesti">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% with messages = get_flashed_messages() %}
   {% if messages %}

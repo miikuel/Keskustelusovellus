@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, session, abort
 import users
 import topics
 
@@ -54,6 +54,8 @@ def manage_topics():
 
 @app.route("/new-topic", methods=["POST"])
 def new_topic():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     if not users.is_admin():
         return redirect("/")
     topic_name = request.form["topic-name"]
@@ -72,6 +74,8 @@ def new_topic():
     
 @app.route("/delete-topic", methods=["POST"])
 def delete_topic():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     if not users.is_admin():
         return redirect("/")
     topicname = request.form["topic-name"]
@@ -84,6 +88,8 @@ def delete_topic():
     
 @app.route("/delete-thread", methods=["POST"])
 def delete_thread():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     threadname = request.form["threadname"]
     topicname = request.form["topicname"]
     if users.is_admin() or topics.thread_creator(threadname):
@@ -103,6 +109,8 @@ def new_thread(topicname):
         if request.method == "GET":
             return render_template("new-thread.html", topicname=topicname)
         if request.method == "POST":
+            if session["csrf_token"] != request.form["csrf_token"]:
+                abort(403)
             threadname = request.form["thread-name"]
             content = request.form["content"]
             if topics.new_thread(topicname, threadname, content=content):
@@ -115,6 +123,8 @@ def new_thread(topicname):
     
 @app.route("/<topicname>/<threadname>/new-message", methods=["POST"])
 def new_message(topicname, threadname):
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     if not users.is_logged():
         return redirect("/")
     if topics.has_permission(topicname):
@@ -150,6 +160,8 @@ def topic_permissions(name):
         userlist = topics.no_permissions(name)
         return render_template("topic-permissions.html", userlist=userlist, topicname=name)
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         username = request.form["username"]
         if topics.add_permissions(name, username):
             flash(f"Käyttäjäoikeudet lisätty käyttäjälle {username}")
@@ -185,6 +197,8 @@ def edit_message(id):
             else:
                 return redirect("/")
         if request.method == "POST":
+            if session["csrf_token"] != request.form["csrf_token"]:
+                abort(403)
             new_message = request.form["content"]
             topicname = request.form["topicname"]
             threadname = request.form["threadname"]
@@ -217,6 +231,8 @@ def edit_thread(topicname, threadname):
             secret = topics.is_secret(topicname)
             return render_template("edit-thread.html", topicname=topicname, threadname=threadname, secret=secret)
         if request.method == "POST":
+            if session["csrf_token"] != request.form["csrf_token"]:
+                abort(403)
             newname = request.form["newname"]
             if topics.rename_thread(threadname, newname):
                 return redirect(url_for("thread", name=topicname.lower(), thread=newname.lower()))

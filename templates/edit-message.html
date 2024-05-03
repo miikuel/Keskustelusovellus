@@ -13,6 +13,7 @@
     <input type="hidden" name="topicname" value="{{ message.topicname }}">
     <input type="hidden" name="threadname" value="{{ message.threadname }}">
     <input type="submit" value="Tallenna muutokset">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 
 {% endblock %}
