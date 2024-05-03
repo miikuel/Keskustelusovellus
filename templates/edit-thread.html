@@ -18,4 +18,11 @@
    <input type="hidden" name="threadname" value="{{ threadname  }}">
    <input type="hidden" name="topicname" value="{{ topicname.lower() }}">
 </form>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+         <p class="errormessage">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 {% endblock %}

@@ -15,4 +15,15 @@
 <input type="submit" value="Lisää oikeudet">
 </form>
 {% endif %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+        {% if message == "Käyttäjäoikeuksien lisääminen epäonnistui" %}
+        <p class="errormessage">{{ message }}</p>
+        {% else %}
+        <p class="success-message">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 {% endblock %}

@@ -116,3 +116,13 @@ li {
     margin-bottom: 10px;
     margin-left: 6px;
 }
+
+.errormessage {
+    color: darkred;
+    font-weight: 700;
+}
+
+.success-message {
+    color: green;
+    font-weight: 700;
+}

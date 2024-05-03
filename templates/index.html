@@ -26,6 +26,17 @@
 <input type="password" name="password" required></p>
 <input type="submit" value="Kirjaudu">
 </form>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+        {% if message == "success" %}
+            <p class="success-message">Käyttäjätunnus luotu onnistuneesti!</p>
+        {% else %}
+            <p class="errormessage">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 <p>Uusi käyttäjä? <a href="/register">Rekisteröidy</a></p>
 {% endif %}
 {% endblock %}

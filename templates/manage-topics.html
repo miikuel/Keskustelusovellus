@@ -8,7 +8,20 @@
 <label for="secret">Salainen alue </label><br><br>
 <input type="submit" value="Luo aihealue">
 </form>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+        {% if message == "delete-error" or message[0] == "*" %}
+        {% elif message == "new_topic_error" %}
+            <p class="errormessage">Uuden alueen luominen epäonnistui</p>
+        {% else %}
+            <p class="success-message">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 <h3>Poista keskustelualue</h3>
+{% if topicnames %}
 <p><i>HUOM! Toiminto poistaa lopullisesti aihealueen, sekä sen alla olevat ketjut ja niissä olevat viestit.</i></p>
 <form action="/delete-topic" method="POST">
 <label for="item-to-remove">Valitse poistettava aihealue:</label><br>
@@ -19,4 +32,18 @@
 </select>
 <input type="submit" value="Poista">
 </form>
+{% else %}
+<p><i>Yhtään keskustelualuetta ei ole vielä luotu</i></p>
+{% endif %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+        {% if message[0] == "*" %}
+            <p class="success-message">{{ message[1:] }}</p>
+        {% elif message == "delete-error" %}
+            <p class="errormessage">Poistaminen epäonnistui</p>
+        {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 {% endblock %}

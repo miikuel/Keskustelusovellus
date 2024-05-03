@@ -2,6 +2,7 @@
 {% block content %}
 <h2>Hakutulokset:</h2>
 <hr>
+{% if messages %}
 {% for message in messages %}
 <a class="topicname-link" href="{{ url_for('topic', name=message.topicname.lower()) }}">{{ message.topicname }}</a>
 <br><br>
@@ -13,5 +14,8 @@
 </div>
 <hr>
 {% endfor %}
+{% else %}
+<p><i>Haulla ei löytynyt tuloksia</i></p>
+{% endif %}
 <a href="/">Palaa etusivulle</a>
 {% endblock %}

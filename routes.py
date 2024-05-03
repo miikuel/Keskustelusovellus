@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 import users
 import topics
 
@@ -19,7 +19,8 @@ def login():
     if users.login(username, password):
         return redirect("/")
     else:
-        return render_template("error.html", message="Väärä tunnus tai salasana")
+        flash("Väärä tunnus tai salasana")
+        return redirect("/")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -30,11 +31,14 @@ def register():
         password1 = request.form["password1"]
         password2 = request.form["password2"]
         if password1 != password2:
-            return render_template("error.html", message="Salasanat eroavat")       
+            flash("Salasanat eroavat")
+            return redirect("/register")
         if users.register(username, password1):
+            flash("success")
             return redirect("/")
         else:
-            return render_template("error.html", message="Rekisteröinti ei onnistunut")
+            flash("Rekisteröinti ei onnistunut")
+            return redirect("/register")
         
 @app.route("/logout")
 def logout():
@@ -55,12 +59,16 @@ def new_topic():
     topic_name = request.form["topic-name"]
     try:
         secret = request.form["secret"]
+        secretmessage = "salainen "
     except:
         secret = False
+        secretmessage = ""
     if topics.new_topic(topic_name, secret):
-        return render_template("success.html", message="Uusi alue luotu onnistuneesti!")
+        flash(f"Uusi {secretmessage}alue ({topic_name}) luotu onnistuneesti!")
+        return redirect("/manage-topics")
     else:
-        return render_template("error.html", message="Uuden aihealueen luominen ei onnistunut")
+        flash("new_topic_error")
+        return redirect("/manage-topics")
     
 @app.route("/delete-topic", methods=["POST"])
 def delete_topic():
@@ -68,9 +76,11 @@ def delete_topic():
         return redirect("/")
     topicname = request.form["topic-name"]
     if topics.delete_topic(topicname):
+        flash(f"*Alue {topicname} poistettu pysyvästi")
         return redirect("/manage-topics")
     else:
-        return render_template("error.html", message="Poistaminen epäonnistui")
+        flash("delete-error")
+        return redirect("/manage-topics")
     
 @app.route("/delete-thread", methods=["POST"])
 def delete_thread():
@@ -80,7 +90,8 @@ def delete_thread():
         if topics.delete_thread(threadname):
             return redirect(url_for("topic", name=topicname))
         else:
-            return render_template("error.html", message="Ketjun poistaminen epäonnistui")
+            flash("Ketjun poistaminen epäonnistui")
+            return redirect(url_for("edit_thread", topicname=topicname, threadname=threadname))
     else:
         return redirect("/")
         
@@ -94,10 +105,11 @@ def new_thread(topicname):
         if request.method == "POST":
             threadname = request.form["thread-name"]
             content = request.form["content"]
-            topics.new_thread(topicname, threadname, content=content)
-            return redirect(url_for("thread", name=topicname, thread=threadname))
-        else:
-            return render_template("error.html", message="Uuden viestiketjun luominen epäonnistui")
+            if topics.new_thread(topicname, threadname, content=content):
+                return redirect(url_for("thread", name=topicname, thread=threadname))
+            else:
+                flash("Uuden viestiketjun luominen epäonnistui")
+                return redirect(url_for("new_thread", topicname=topicname))
     else:
         return redirect("/")
     
@@ -110,7 +122,8 @@ def new_message(topicname, threadname):
         if topics.new_message(threadname, message):
             return redirect(url_for("thread", name=topicname, thread=threadname))
         else:
-            return render_template("error.html", message="Viestin lähetys epäonnistui")
+            flash("Viestin lähetys epäonnistui")
+            return url_for("thread", name=topicname, thread=threadname)
     else:
         return redirect("/")
 
@@ -139,8 +152,11 @@ def topic_permissions(name):
     if request.method == "POST":
         username = request.form["username"]
         if topics.add_permissions(name, username):
-            return render_template("success.html", message="Käyttäjäoikeudet lisätty")
-        return render_template("error.html", message="Käyttäjäoikeuksien lisääminen ei onnistunut")
+            flash(f"Käyttäjäoikeudet lisätty käyttäjälle {username}")
+            return redirect(url_for("topic_permissions", name=name))
+        else:
+            flash("Käyttäjäoikeuksien lisääminen epäonnistui")
+            return redirect(url_for("topic_permissions", name=name))
     
     
 @app.route("/topic/<name>/<thread>")
@@ -187,7 +203,7 @@ def delete_message(id, topic, thread):
         if topics.delete_message(id, admin):
             return redirect(url_for("thread", name=topic, thread=thread))
         else:
-            return render_template("error.html", message="Viestin poistaminen epäonnistui")
+            return redirect("/")
 
     
 @app.route("/edit-thread/<topicname>/<threadname>", methods=["GET", "POST"])
@@ -205,7 +221,8 @@ def edit_thread(topicname, threadname):
             if topics.rename_thread(threadname, newname):
                 return redirect(url_for("thread", name=topicname.lower(), thread=newname.lower()))
             else:
-                return render_template("error.html", message="Ketjun nimen muuttaminen epäonnistui")
+                flash("Ketjun nimen muuttaminen epäonnistui")
+                return redirect(url_for("edit_thread", topicname=topicname, threadname=threadname))
             
 @app.route("/result")
 def result():
