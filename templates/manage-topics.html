@@ -13,8 +13,10 @@
   {% if messages %}
     {% for message in messages %}
         {% if message == "delete-error" or message[0] == "*" %}
+        {% elif message == "new_topic_len_error" %}
+            <p class="errormessage">Alueen nimen tulee olla 3-25 merkkiä pitkä</p>        
         {% elif message == "new_topic_error" %}
-            <p class="errormessage">Uuden alueen luominen epäonnistui</p>
+            <p class="errormessage">Saman niminen alue on jo olemassa</p>
         {% else %}
             <p class="success-message">{{ message }}</p>
         {% endif %}

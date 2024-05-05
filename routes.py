@@ -33,11 +33,17 @@ def register():
         if password1 != password2:
             flash("Salasanat eroavat")
             return redirect("/register")
+        if len(password1) < 5 or len(password1) > 20:
+            flash("Salasanan tulee olla 5-20 merkkiä pitkä")
+            return redirect("/register")
+        if len(username) < 2 or len(username) > 15:
+            flash("Käyttäjätunnuksen tulee olla 2-15 merkkiä pitkä")
+            return redirect("/register")
         if users.register(username, password1):
             flash("success")
             return redirect("/")
         else:
-            flash("Rekisteröinti ei onnistunut")
+            flash("Valitsemasi käyttäjätunnus on jo käytössä")
             return redirect("/register")
         
 @app.route("/logout")
@@ -59,6 +65,9 @@ def new_topic():
     if not users.is_admin():
         return redirect("/")
     topic_name = request.form["topic-name"]
+    if len(topic_name) < 3 or len(topic_name) > 25:
+        flash("new_topic_len_error")
+        return redirect("/manage-topics")
     try:
         secret = request.form["secret"]
         secretmessage = "salainen "
@@ -113,6 +122,12 @@ def new_thread(topicname):
                 abort(403)
             threadname = request.form["thread-name"]
             content = request.form["content"]
+            if len(threadname) < 3 or len(threadname) > 25:
+                flash("Ketjun nimen tulee olla 3-25 merkkiä pitkä")
+                return redirect(url_for("new_thread", topicname=topicname))
+            if len(content) < 1 or len(content) > 500:
+                flash("Viestin maksimipituus on 500 merkkiä")
+                return redirect(url_for("new_thread", topicname=topicname))
             if topics.new_thread(topicname, threadname, content=content):
                 return redirect(url_for("thread", name=topicname, thread=threadname))
             else:
@@ -129,11 +144,14 @@ def new_message(topicname, threadname):
         return redirect("/")
     if topics.has_permission(topicname):
         message = request.form["content"]
+        if len(message) < 1 or len(message) > 500:
+            flash("Viestin maksimipituus on 500 merkkiä")
+            return redirect(url_for("thread", name=topicname, thread=threadname))
         if topics.new_message(threadname, message):
             return redirect(url_for("thread", name=topicname, thread=threadname))
         else:
             flash("Viestin lähetys epäonnistui")
-            return url_for("thread", name=topicname, thread=threadname)
+            return redirect(url_for("thread", name=topicname, thread=threadname))
     else:
         return redirect("/")
 
@@ -202,8 +220,14 @@ def edit_message(id):
             new_message = request.form["content"]
             topicname = request.form["topicname"]
             threadname = request.form["threadname"]
+            if len(new_message) < 1 or len(new_message) > 500:
+                flash("Viestin maksimipituus on 500 merkkiä")
+                return redirect(url_for("edit_message", id=id))
             if topics.edit_message(id, new_message):
                 return redirect(url_for("thread", name=topicname, thread=threadname))
+            else:
+                flash("Viestin muokkaaminen epäonnistui")
+                return redirect(url_for("edit_message", id=id))
     else:
         return redirect("/")
 
@@ -234,6 +258,9 @@ def edit_thread(topicname, threadname):
             if session["csrf_token"] != request.form["csrf_token"]:
                 abort(403)
             newname = request.form["newname"]
+            if len(newname) < 3 or len(newname) > 25:
+                flash("Ketjun nimen tulee olla 3-25 merkkiä pitkä")
+                return redirect(url_for("edit_thread", topicname=topicname, threadname=threadname))
             if topics.rename_thread(threadname, newname):
                 return redirect(url_for("thread", name=topicname.lower(), thread=newname.lower()))
             else:
