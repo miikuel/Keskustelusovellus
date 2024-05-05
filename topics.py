@@ -58,7 +58,8 @@ def topic_threads(topic):
     sql = "SELECT id FROM topics WHERE LOWER(name)=:topic"
     result = db.session.execute(text(sql), {"topic":topic})
     topic_id = result.fetchone()[0]
-    sql = "SELECT t.name, COUNT(m.*) messages, MAX(m.created_at) latest FROM threads t, messages m WHERE t.id=m.thread_id AND t.topic_id=:topic_id GROUP BY t.name"
+    sql = """SELECT t.name, COUNT(m.*) messages, MAX(m.created_at) latest FROM threads t, messages m 
+            WHERE t.id=m.thread_id AND t.topic_id=:topic_id GROUP BY t.name"""
     result = db.session.execute(text(sql), {"topic_id":topic_id})
     threads = result.fetchall()
     return threads
@@ -67,7 +68,8 @@ def get_messages(thread):
     sql = "SELECT id FROM threads WHERE LOWER(name)=:name"
     result = db.session.execute(text(sql), {"name":thread.lower()})
     thread_id = result.fetchone()[0]
-    sql = "SELECT ROW_NUMBER() OVER (ORDER BY m.created_at) AS rownumber, m.message, u.username, m.created_at, m.edited_at, m.id, m.deleted FROM messages m, users u WHERE u.id=m.created_by AND thread_id=:thread_id ORDER BY m.created_at"
+    sql = """SELECT ROW_NUMBER() OVER (ORDER BY m.created_at) AS rownumber, m.message, u.username, m.created_at, m.edited_at, m.id, m.deleted 
+            FROM messages m, users u WHERE u.id=m.created_by AND thread_id=:thread_id ORDER BY m.created_at"""
     result =  db.session.execute(text(sql), {"thread_id":thread_id})
     messages = result.fetchall()
     return messages
@@ -110,7 +112,10 @@ def new_message(thread, message):
     
 
 def search_messages(query):
-    sql = "SELECT m.message, m.created_at, m.edited, m.created_by, users.username, topics.name topicname, threads.name threadname FROM messages m, topics, threads, users, topic_permissions tp WHERE topics.id=m.topic_id AND threads.id=m.thread_id AND users.id=m.created_by AND topics.id=tp.topic_id AND tp.user_id=:user_id AND LOWER(m.message) LIKE :query"
+    sql = """SELECT m.message, m.created_at, m.edited, m.created_by, users.username, topics.name topicname, threads.name threadname 
+            FROM messages m, topics, threads, users, topic_permissions tp 
+            WHERE topics.id=m.topic_id AND threads.id=m.thread_id AND users.id=m.created_by 
+            AND topics.id=tp.topic_id AND tp.user_id=:user_id AND LOWER(m.message) LIKE :query"""
     result = db.session.execute(text(sql), {"user_id":session["user_id"],"query":"%"+query.lower()+"%"})
     messages = result.fetchall()
     return messages
@@ -159,7 +164,8 @@ def delete_message(id, admin):
     
 def message_for_edit(id):
     try:
-        sql = "SELECT m.id, m.message, t.name topicname, th.name threadname FROM users u, messages m, topics t, threads th WHERE u.id=m.created_by AND t.id=m.topic_id AND th.id=m.thread_id AND m.id=:id AND u.username=:username"
+        sql = """SELECT m.id, m.message, t.name topicname, th.name threadname FROM users u, messages m, topics t, threads th 
+                WHERE u.id=m.created_by AND t.id=m.topic_id AND th.id=m.thread_id AND m.id=:id AND u.username=:username"""
         result = db.session.execute(text(sql), {"id":id, "username":session["username"]})
         message = result.fetchone()
         if not message:
@@ -209,7 +215,8 @@ def topic_exists(name):
         return False
 
 def no_permissions(name):
-    sql = "SELECT u.username FROM users u WHERE u.id NOT IN (SELECT tp.user_id FROM topic_permissions tp, topics t WHERE tp.topic_id=t.id AND LOWER(t.name)=:name)"
+    sql = """SELECT u.username FROM users u WHERE u.id NOT IN (SELECT tp.user_id FROM topic_permissions tp, topics t 
+            WHERE tp.topic_id=t.id AND LOWER(t.name)=:name)"""
     result = db.session.execute(text(sql), {"name":name.lower()})
     userlist = result.fetchall()
     return userlist
